@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+
+{% block title %}Generate Reports - DeptMgnt{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">
+                    <i class="fas fa-chart-bar me-2"></i>Generate Reports - {{ department.name }}
+                </h2>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-clipboard-check me-2"></i>Attendance Reports
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="report_type" value="attendance">
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Select Class</label>
+                                        <select name="classroom" class="form-select">
+                                            <option value="">All Classes</option>
+                                            {% for classroom in classrooms %}
+                                                <option value="{{ classroom.id }}">{{ classroom.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Start Date</label>
+                                                <input type="date" name="start_date" class="form-control" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">End Date</label>
+                                                <input type="date" name="end_date" class="form-control" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-success w-100">
+                                        <i class="fas fa-file-csv me-2"></i>Download Attendance Report (CSV)
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-chart-line me-2"></i>Performance Reports
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="report_type" value="performance">
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Select Class</label>
+                                        <select name="classroom" class="form-select">
+                                            <option value="">All Classes</option>
+                                            {% for classroom in classrooms %}
+                                                <option value="{{ classroom.id }}">{{ classroom.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Report Format</label>
+                                        <select class="form-select" disabled>
+                                            <option>PDF Format (Default)</option>
+                                        </select>
+                                        <small class="text-muted">PDF reports include detailed performance analysis</small>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-info w-100">
+                                        <i class="fas fa-file-pdf me-2"></i>Download Performance Report (PDF)
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mt-4">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-tachometer-alt me-2"></i>Department Quick Statistics
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-md-3 mb-3">
+                                <div class="stat-card">
+                                    <div class="stat-number">{{ total_students }}</div>
+                                    <div class="stat-label">Total Students</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="stat-card">
+                                    <div class="stat-number">{{ total_staff }}</div>
+                                    <div class="stat-label">Faculty Members</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="stat-card">
+                                    <div class="stat-number">{{ total_classes }}</div>
+                                    <div class="stat-label">Active Classes</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="stat-card">
+                                    <div class="stat-number">{{ pending_approvals }}</div>
+                                    <div class="stat-label">Pending Approvals</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-lightbulb me-2"></i>Report Generation Tips
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6><i class="fas fa-csv text-success me-2"></i>CSV Reports</h6>
+                                <ul class="small">
+                                    <li>Best for data analysis in Excel</li>
+                                    <li>Includes roll numbers and percentages</li>
+                                    <li>Easy to filter and sort</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6><i class="fas fa-file-pdf text-danger me-2"></i>PDF Reports</h6>
+                                <ul class="small">
+                                    <li>Professional format for presentations</li>
+                                    <li>Includes charts and summaries</li>
+                                    <li>Ready for printing and sharing</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Set default dates for attendance report (last 30 days)
+    const today = new Date();
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(today.getDate() - 30);
+    
+    // Format dates as YYYY-MM-DD
+    const formatDate = (date) => date.toISOString().split('T')[0];
+    
+    // Set default values
+    const startDateInput = document.querySelector('input[name="start_date"]');
+    const endDateInput = document.querySelector('input[name="end_date"]');
+    
+    if (startDateInput && endDateInput) {
+        startDateInput.value = formatDate(thirtyDaysAgo);
+        endDateInput.value = formatDate(today);
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Department of Computer Science</title>
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0d6efd 0%, #fff 100%);
+            min-height: 100vh;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .dept-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 32px 0 rgba(13,110,253,0.15);
+            padding: 2.5rem 2rem;
+            margin-top: 6rem;
+            max-width: 630px;
+        }
+        .dept-title {
+            color: #0d6efd;
+            font-size: 2.7rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+        .dept-desc {
+            color: #343a40;
+            font-size: 1.12rem;
+            margin-top: 1rem;
+        }
+        .btn-group-custom {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            justify-content: center;
+            margin-top: 2.5rem;
+        }
+        .dept-btn {
+            background: #0d6efd;
+            color: #fff;
+            border-radius: 2rem;
+            padding: 0.75rem 2.2rem;
+            font-size: 1.15rem;
+            border: none;
+            box-shadow: 0 4px 14px rgba(13,110,253,0.1);
+            transition: background 0.3s;
+        }
+        .dept-btn:hover {
+            background: #084298;
+            color: #fff;
+        }
+        .admin-btn {
+            background: #fff;
+            color: #0d6efd;
+            border-radius: 2rem;
+            padding: 0.75rem 2.2rem;
+            font-size: 1.15rem;
+            border: 2px solid #0d6efd;
+            box-shadow: 0 4px 14px rgba(13,110,253,0.06);
+            transition: background 0.3s, color 0.3s;
+        }
+        .admin-btn:hover {
+            background: #0d6efd;
+            color: #fff;
+            border: 2px solid #0d6efd;
+        }
+        .dept-footer {
+            color: #6c757d;
+            font-size: 1rem;
+            margin-top: 2rem;
+            text-align: center;
+        }
+        @media (max-width: 600px) {
+            .dept-card { padding: 1.2rem 1rem; margin-top: 2.5rem;}
+            .dept-title { font-size: 1.7rem;}
+            .btn-group-custom { gap: 0.7rem;}
+        }
+    </style>
+</head>
+<body>
+    <div class="container d-flex justify-content-center align-items-center flex-column" style="min-height:95vh;">
+        <div class="dept-card text-center">
+            <img src="" alt="CS Logo" style="width:70px; margin-bottom: 0.5rem;">
+            <div class="dept-title">Department of Computer Science</div>
+            <div class="dept-desc">
+                Welcome to the <b>CS Department Management System</b>!  
+                <br>Empowering innovation, research, and technology leadership.
+                <br><br>
+                <b>Students</b> and <b>Staff</b> can register and login to manage their academic activities.<br>
+                <b>Admin</b> can manage all users, courses, announcements, and more.
+            </div>
+            <div class="btn-group-custom mt-3 mb-2">
+                <!-- Student Login/Register -->
+                <a href="{% url 'student_login' %}" class="dept-btn">Student Login</a>
+                <a href="{% url 'student_register' %}" class="dept-btn">Student Register</a>
+                <!-- Staff Login/Register -->
+                <a href="{% url 'staff_login' %}" class="dept-btn">Staff Login</a>
+                <a href="{% url 'staff_register' %}" class="dept-btn">Staff Register</a>
+                <!-- Admin Login -->
+                <a href="{% url 'admin_login' %}" class="admin-btn">Admin Login</a>
+            </div>
+        </div>
+        <div class="dept-footer">
+            &copy; 2025 Department of Computer Science | Holy Cross College, Nagercoil
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manage Students - DeptMgnt{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title mb-4">
+                        <i class="fas fa-users me-2"></i>Manage Students
+                    </h2>
+                    
+                    <!-- DEBUG INFORMATION - Remove after fixing -->
+                    <div class="alert alert-warning mb-4">
+                        <h5><i class="fas fa-bug me-2"></i>Debug Information</h5>
+                        <p class="mb-1"><strong>Classrooms in database:</strong> {{ classrooms|length }}</p>
+                        <p class="mb-1"><strong>Selected classroom:</strong> {% if selected_classroom %}{{ selected_classroom.name }}{% else %}None{% endif %}</p>
+                        <p class="mb-0"><strong>Students found:</strong> {{ students|length }}</p>
+                    </div>
+                    
+                    <!-- Classroom Selection -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fas fa-classroom me-2"></i>Select Classroom
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <form method="get" id="classroomForm">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Choose Classroom</label>
+                                            <select name="classroom" class="form-select form-select-lg" id="classroomSelect" onchange="this.form.submit()">
+                                                <option value="">-- Select a Classroom --</option>
+                                                {% for classroom in classrooms %}
+                                                    <option value="{{ classroom.id }}" 
+                                                            {% if selected_classroom and selected_classroom.id == classroom.id %}selected{% endif %}>
+                                                        {{ classroom.name }} ({{ classroom.department.name }})
+                                                    </option>
+                                                {% empty %}
+                                                    <option value="" disabled>No classrooms available in database</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        {% if classrooms %}
+                                        <div class="alert alert-success">
+                                            <i class="fas fa-check-circle me-2"></i>
+                                            <strong>Success!</strong> Found {{ classrooms|length }} classroom(s) in database.
+                                        </div>
+                                        {% else %}
+                                        <div class="alert alert-danger">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            <strong>No classrooms found!</strong> Please create classrooms in the admin panel.
+                                        </div>
+                                        {% endif %}
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {% if selected_classroom %}
+                        <div class="col-md-6">
+                            <div class="card bg-success text-white">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i class="fas fa-check-circle me-2"></i>Selected: {{ selected_classroom.name }}
+                                    </h5>
+                                    <p class="mb-1"><strong>Department:</strong> {{ selected_classroom.department.name }}</p>
+                                    <p class="mb-1"><strong>Academic Year:</strong> {{ selected_classroom.academic_year }}</p>
+                                    <p class="mb-0"><strong>Students:</strong> {{ students|length }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body text-center py-5">
+                                    <i class="fas fa-mouse-pointer fa-3x text-muted mb-3"></i>
+                                    <h5 class="text-muted">No Classroom Selected</h5>
+                                    <p class="text-muted">Choose a classroom from the dropdown to view students.</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Students List -->
+                    {% if selected_classroom %}
+                        {% if students %}
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-user-graduate me-2"></i>
+                                    Students in {{ selected_classroom.name }}
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Roll No</th>
+                                                <th>Student Name</th>
+                                                <th>Email</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for student in students %}
+                                            <tr>
+                                                <td><strong>{{ student.roll_no }}</strong></td>
+                                                <td>{{ student.user.get_full_name }}</td>
+                                                <td>{{ student.user.email }}</td>
+                                                <td>
+                                                    {% if student.is_approved %}
+                                                    <span class="badge bg-success">Approved</span>
+                                                    {% else %}
+                                                    <span class="badge bg-warning">Pending</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-users-slash fa-3x text-muted mb-3"></i>
+                            <h4 class="text-muted">No Students Found</h4>
+                            <p class="text-muted">There are no students in this classroom yet.</p>
+                        </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+{% endblock %}

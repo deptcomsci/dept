@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - DeptMgnt{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">
+                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                </h2>
+                
+                {% if role == 'student' %}
+                    <!-- Student Dashboard -->
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-number">{{ attendance_percentage|floatformat:1 }}%</div>
+                                <div class="stat-label">Attendance</div>
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <h4>Welcome, {{ student.user.get_full_name }}</h4>
+                            <p>Roll No: {{ student.roll_no }} | Department: {{ student.department.name }} | Class: {{ student.classroom.name }}</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Announcements -->
+                    <div class="mt-4">
+                        <h5>Recent Announcements</h5>
+                        {% for announcement in announcements %}
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <h6 class="card-title">{{ announcement.title }}</h6>
+                                <p class="card-text">{{ announcement.content|truncatewords:20 }}</p>
+                                <small class="text-muted">By {{ announcement.created_by.user.get_full_name }} on {{ announcement.created_at|date }}</small>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted">No recent announcements.</p>
+                        {% endfor %}
+                    </div>
+                    
+                {% elif role == 'staff' or role == 'hod' %}
+                    <!-- Staff/HOD Dashboard -->
+                    <div class="row">
+                        {% if role == 'hod' %}
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-number">{{ total_students }}</div>
+                                <div class="stat-label">Total Students</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-number">{{ total_staff }}</div>
+                                <div class="stat-label">Faculty Members</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-number">{{ total_classes }}</div>
+                                <div class="stat-label">Classes</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-number">{{ pending_approvals }}</div>
+                                <div class="stat-label">Pending Approvals</div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="col-12 mt-4">
+                            <h4>Quick Actions</h4>
+                            <div class="d-flex flex-wrap gap-2">
+                                <a href="{% url 'staff_attendance' %}" class="btn btn-primary">
+                                    <i class="fas fa-clipboard-check me-2"></i>Mark Attendance
+                                </a>
+                                <a href="{% url 'staff_marks' %}" class="btn btn-primary">
+                                    <i class="fas fa-edit me-2"></i>Enter Marks
+                                </a>
+                                <a href="{% url 'staff_announcements' %}" class="btn btn-primary">
+                                    <i class="fas fa-bullhorn me-2"></i>Create Announcement
+                                </a>
+                                <a href="{% url 'staff_lectures' %}" class="btn btn-primary">
+                                    <i class="fas fa-upload me-2"></i>Upload Lecture
+                                </a>
+                                {% if role == 'hod' %}
+                                <a href="{% url 'hod_reports' %}" class="btn btn-accent">
+                                    <i class="fas fa-chart-bar me-2"></i>Generate Reports
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                {% else %}
+                    <!-- Admin Dashboard -->
+                    <div class="text-center py-5">
+                        <h3>Administrator Dashboard</h3>
+                        <p class="text-muted">Access the admin panel to manage all system data.</p>
+                        <a href="/admin/" class="btn btn-primary btn-lg">
+                            <i class="fas fa-cog me-2"></i>Admin Panel
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

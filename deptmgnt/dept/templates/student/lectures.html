@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Lecture Materials - DeptMgnt{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">
+                    <i class="fas fa-book me-2"></i>Lecture Materials
+                </h2>
+                
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <h5>{{ student.user.get_full_name }}</h5>
+                        <p class="text-muted">Class: {{ student.classroom.name }}</p>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Description</th>
+                                <th>Uploaded By</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for lecture in lectures %}
+                            <tr>
+                                <td>
+                                    <strong>{{ lecture.title }}</strong>
+                                </td>
+                                <td>
+                                    {% if lecture.description %}
+                                        {{ lecture.description|truncatewords:10 }}
+                                    {% else %}
+                                        <span class="text-muted">No description</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ lecture.uploaded_by.user.get_full_name }}</td>
+                                <td>{{ lecture.uploaded_at|date:"M d, Y" }}</td>
+                                <td>
+                                    <a href="{{ lecture.file.url }}" class="btn btn-primary btn-sm" download>
+                                        <i class="fas fa-download me-1"></i>Download
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center py-4">
+                                    <i class="fas fa-book fa-2x text-muted mb-3"></i>
+                                    <p class="text-muted">No lecture materials available yet.</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

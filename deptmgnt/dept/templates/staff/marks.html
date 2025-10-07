@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Enter Marks - DeptMgnt{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">
+                    <i class="fas fa-edit me-2"></i>Enter Marks
+                </h2>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Enter New Marks</h5>
+                            </div>
+                            <div class="card-body">
+                                <form method="post">
+                                    {% csrf_token %}
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Student</label>
+                                        {% render_field form.student class="form-control" %}
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Classroom</label>
+                                        {% render_field form.classroom class="form-control" %}
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Subject</label>
+                                        {% render_field form.subject class="form-control" %}
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Exam Type</label>
+                                                {% render_field form.exam_type class="form-control" %}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="mb-3">
+                                                <label class="form-label">Marks</label>
+                                                {% render_field form.marks_obtained class="form-control" placeholder="0-100" %}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="mb-3">
+                                                <label class="form-label">Max Marks</label>
+                                                {% render_field form.maximum_marks class="form-control" value="100" %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="fas fa-save me-2"></i>Save Marks
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Recent Marks Entries</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Student</th>
+                                                <th>Subject</th>
+                                                <th>Marks</th>
+                                                <th>Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for mark in marks %}
+                                            <tr>
+                                                <td>{{ mark.student.user.get_full_name }}</td>
+                                                <td>{{ mark.subject }}</td>
+                                                <td>
+                                                    <span class="badge {% if mark.percentage >= 75 %}bg-success{% elif mark.percentage >= 50 %}bg-warning{% else %}bg-danger{% endif %}">
+                                                        {{ mark.marks_obtained }}/{{ mark.maximum_marks }}
+                                                    </span>
+                                                </td>
+                                                <td>{{ mark.entered_at|date:"M d" }}</td>
+                                            </tr>
+                                            {% empty %}
+                                            <tr>
+                                                <td colspan="4" class="text-center text-muted py-3">
+                                                    No marks entered yet
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

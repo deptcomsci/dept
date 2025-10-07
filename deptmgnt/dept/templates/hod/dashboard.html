@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}HOD Dashboard - DeptMgnt{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">
+                    <i class="fas fa-user-tie me-2"></i>HOD Dashboard - {{ department.name }}
+                </h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_students }}</div>
+            <div class="stat-label">Total Students</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_staff }}</div>
+            <div class="stat-label">Faculty Members</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_classes }}</div>
+            <div class="stat-label">Classes</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-number">{{ pending_approvals }}</div>
+            <div class="stat-label">Pending Approvals</div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Recent Department Announcements</h5>
+            </div>
+            <div class="card-body">
+                {% for announcement in recent_announcements %}
+                <div class="card mb-2 {% if announcement.important %}border-warning{% endif %}">
+                    <div class="card-body p-3">
+                        <h6 class="card-title mb-1">
+                            {{ announcement.title }}
+                            {% if announcement.important %}
+                                <span class="badge bg-warning ms-1">Important</span>
+                            {% endif %}
+                        </h6>
+                        <p class="card-text small mb-1">{{ announcement.content|truncatewords:15 }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                By: {{ announcement.created_by.user.get_full_name }} • {{ announcement.classroom.name }}
+                            </small>
+                            <small class="text-muted">{{ announcement.created_at|timesince }} ago</small>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-4">
+                    <i class="fas fa-bullhorn fa-2x text-muted mb-3"></i>
+                    <p class="text-muted">No recent announcements</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'hod_reports' %}" class="btn btn-primary">
+                        <i class="fas fa-chart-bar me-2"></i>Generate Reports
+                    </a>
+                    <a href="{% url 'staff_students' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-users me-2"></i>Manage Students
+                    </a>
+                    <a href="/admin/" class="btn btn-outline-primary" target="_blank">
+                        <i class="fas fa-cog me-2"></i>Admin Panel
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Department Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        B.Sc Programs
+                        <span class="badge bg-primary rounded-pill">3</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        M.Sc Programs
+                        <span class="badge bg-primary rounded-pill">2</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        Faculty Strength
+                        <span class="badge bg-success rounded-pill">{{ total_staff }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
