@@ -1,0 +1,295 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Student Registration - DeptMgnt{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8">
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    <h2 class="card-title">
+                        <i class="fas fa-user-graduate me-2 text-primary"></i>Student Registration
+                    </h2>
+                    <p class="text-muted">Create your student account to access the department portal</p>
+                </div>
+                
+                <form method="post" enctype="multipart/form-data" id="studentRegistrationForm">
+                    {% csrf_token %}
+                    
+                    <!-- Account Information -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-user-circle me-2"></i>Account Information
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Username <span class="text-danger">*</span></label>
+                                        {% render_field user_form.username class="form-control" placeholder="Choose a username" %}
+                                        {% if user_form.username.errors %}
+                                            <div class="text-danger small mt-1">
+                                                {{ user_form.username.errors }}
+                                            </div>
+                                        {% endif %}
+                                        <div class="form-text">Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Email <span class="text-danger">*</span></label>
+                                        {% render_field user_form.email class="form-control" placeholder="your.email@university.edu" %}
+                                        {% if user_form.email.errors %}
+                                            <div class="text-danger small mt-1">
+                                                {{ user_form.email.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">First Name <span class="text-danger">*</span></label>
+                                        {% render_field user_form.first_name class="form-control" placeholder="Enter first name" %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Last Name <span class="text-danger">*</span></label>
+                                        {% render_field user_form.last_name class="form-control" placeholder="Enter last name" %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Password <span class="text-danger">*</span></label>
+                                        {% render_field user_form.password class="form-control" type="password" placeholder="Create a strong password" %}
+                                        <div class="form-text">Use a strong password with letters, numbers, and symbols.</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                                        {% render_field user_form.password_confirm class="form-control" type="password" placeholder="Confirm your password" %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {% if user_form.non_field_errors %}
+                                <div class="alert alert-danger">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    {{ user_form.non_field_errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Student Information -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-graduation-cap me-2"></i>Student Information
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Roll Number <span class="text-danger">*</span></label>
+                                        {% render_field student_form.roll_no class="form-control" placeholder="e.g., CS24001" %}
+                                        {% if student_form.roll_no.errors %}
+                                            <div class="text-danger small mt-1">
+                                                {{ student_form.roll_no.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Phone Number</label>
+                                        {% render_field student_form.phone class="form-control" placeholder="+91 9876543210" %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Department <span class="text-danger">*</span></label>
+                                        {% render_field student_form.department class="form-select" %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Class <span class="text-danger">*</span></label>
+                                        {% render_field student_form.classroom class="form-select" %}
+                                        <div class="form-text">Select your department first to see available classes</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Address</label>
+                                {% render_field student_form.address class="form-control" rows="3" placeholder="Enter your complete address" %}
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Date of Birth</label>
+                                        {% render_field student_form.date_of_birth class="form-control" type="date" %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Profile Photo</label>
+                                        {% render_field student_form.photo class="form-control" %}
+                                        <div class="form-text">Optional. JPG, PNG files only. Max 2MB.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Information Alert -->
+                    <div class="alert alert-info">
+                        <div class="d-flex">
+                            <i class="fas fa-info-circle me-3 fa-2x mt-1"></i>
+                            <div>
+                                <h6 class="alert-heading">Important Information</h6>
+                                <p class="mb-1">After registration, your account will need to be approved by the department staff before you can access the system.</p>
+                                <p class="mb-0">You will receive an email notification once your account is approved.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>Complete Student Registration
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="text-center mt-4">
+                    <p class="mb-2">Already have an account? 
+                        <a href="{% url 'login' %}" class="text-decoration-none fw-bold">Sign In here</a>
+                    </p>
+                    <p class="mb-0">Are you a faculty member? 
+                        <a href="{% url 'staff_register' %}" class="text-decoration-none fw-bold">Staff Registration</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const departmentSelect = document.getElementById("id_department");
+    const classroomSelect = document.getElementById("id_classroom");
+    
+    function updateClassrooms() {
+        const departmentId = departmentSelect.value;
+        
+        if (departmentId) {
+            // Show loading state
+            classroomSelect.innerHTML = '<option value="">Loading classes...</option>';
+            classroomSelect.disabled = true;
+            
+            // Fetch classrooms for this department
+            fetch(`/api/get-classrooms/?department_id=${departmentId}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    classroomSelect.innerHTML = '<option value="">Select Your Class</option>';
+                    data.classrooms.forEach(classroom => {
+                        const option = document.createElement('option');
+                        option.value = classroom.id;
+                        option.textContent = classroom.name;
+                        classroomSelect.appendChild(option);
+                    });
+                    classroomSelect.disabled = false;
+                })
+                .catch(error => {
+                    console.error('Error fetching classrooms:', error);
+                    classroomSelect.innerHTML = '<option value="">Error loading classes</option>';
+                    classroomSelect.disabled = false;
+                });
+        } else {
+            classroomSelect.innerHTML = '<option value="">Select department first</option>';
+            classroomSelect.disabled = true;
+        }
+    }
+    
+    if (departmentSelect && classroomSelect) {
+        departmentSelect.addEventListener('change', updateClassrooms);
+        
+        // Initialize on page load if department is already selected
+        if (departmentSelect.value) {
+            updateClassrooms();
+        }
+    }
+    
+    // Form validation
+    const form = document.getElementById('studentRegistrationForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const password = document.querySelector('input[name="password"]').value;
+            const passwordConfirm = document.querySelector('input[name="password_confirm"]').value;
+            
+            if (password !== passwordConfirm) {
+                e.preventDefault();
+                alert('Passwords do not match. Please check and try again.');
+                return false;
+            }
+            
+            if (password.length < 8) {
+                e.preventDefault();
+                alert('Password should be at least 8 characters long.');
+                return false;
+            }
+        });
+    }
+});
+</script>
+
+<style>
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.form-control, .form-select {
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #1e3c72;
+    box-shadow: 0 0 0 0.2rem rgba(30, 60, 114, 0.25);
+}
+
+.btn {
+    border-radius: 10px;
+    font-weight: 500;
+    padding: 12px 30px;
+}
+
+.alert {
+    border-radius: 10px;
+    border: none;
+}
+</style>
+{% endblock %}

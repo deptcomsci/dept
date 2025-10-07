@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}My Marks - DeptMgnt{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">
+                    <i class="fas fa-chart-line me-2"></i>My Marks
+                </h2>
+                
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Exam Type</th>
+                                <th>Marks Obtained</th>
+                                <th>Maximum Marks</th>
+                                <th>Percentage</th>
+                                <th>Entered By</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for mark in marks %}
+                            <tr>
+                                <td>{{ mark.subject }}</td>
+                                <td>{{ mark.exam_type }}</td>
+                                <td>{{ mark.marks_obtained }}</td>
+                                <td>{{ mark.maximum_marks }}</td>
+                                <td>{{ mark.percentage|floatformat:2 }}%</td>
+                                <td>{{ mark.entered_by.user.get_full_name }}</td>
+                                <td>{{ mark.entered_at|date }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">No marks records found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

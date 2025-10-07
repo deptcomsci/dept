@@ -1,0 +1,388 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mark Attendance - DeptMgnt{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">
+                    <i class="fas fa-clipboard-check me-2"></i>Mark Attendance
+                </h2>
+                
+                <!-- Classroom Selection -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <form method="get" id="classroomForm">
+                            <div class="mb-3">
+                                <label class="form-label">Select Classroom</label>
+                                <select name="classroom" class="form-select" id="classroomSelect" onchange="this.form.submit()">
+                                    <option value="">-- Select a Classroom --</option>
+                                    {% for classroom in classrooms %}
+                                        <option value="{{ classroom.id }}" 
+                                                {% if selected_classroom and selected_classroom.id == classroom.id %}selected{% endif %}>
+                                            {{ classroom.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            {% if selected_classroom %}
+                            <div class="mb-3">
+                                <label class="form-label">Select Date</label>
+                                <input type="date" name="date" value="{{ selected_date }}" class="form-control" onchange="this.form.submit()">
+                            </div>
+                            {% endif %}
+                        </form>
+                    </div>
+                    
+                    {% if selected_classroom %}
+                    <div class="col-md-6">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ selected_classroom.name }}</h5>
+                                <p class="card-text mb-1">
+                                    <strong>Date:</strong> {{ selected_date }}
+                                </p>
+                                <p class="card-text mb-1">
+                                    <strong>Total Students:</strong> {{ students|length }}
+                                </p>
+                                <p class="card-text">
+                                    <strong>Department:</strong> {{ selected_classroom.department.name }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Attendance Marking Section -->
+                {% if selected_classroom and students %}
+                <form id="attendanceForm" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="classroom_id" value="{{ selected_classroom.id }}">
+                    <input type="hidden" name="date" value="{{ selected_date }}">
+                    
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-users me-2"></i>
+                                Students in {{ selected_classroom.name }}
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Roll No</th>
+                                            <th>Student Name</th>
+                                            <th>Attendance Status</th>
+                                            <th>Current Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for student in students %}
+                                        <tr>
+                                            <td>
+                                                <strong>{{ student.roll_no }}</strong>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    {% if student.photo %}
+                                                        <img src="{{ student.photo.url }}" alt="{{ student.user.get_full_name }}" 
+                                                             class="rounded-circle me-3" width="40" height="40">
+                                                    {% else %}
+                                                        <div class="student-avatar me-3">
+                                                            {{ student.user.get_full_name|make_list|first|upper }}
+                                                        </div>
+                                                    {% endif %}
+                                                    <div>
+                                                        <div class="fw-bold">{{ student.user.get_full_name }}</div>
+                                                        <small class="text-muted">{{ student.user.email }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm" role="group" data-student-id="{{ student.id }}">
+                                                    {% comment %} Find existing attendance for this student {% endcomment %}
+                                                    {% for record in attendance_records %}
+                                                        {% if record.student.id == student.id %}
+                                                            <input type="radio" class="btn-check" name="attendance_{{ student.id }}" 
+                                                                   id="present_{{ student.id }}" value="P" 
+                                                                   {% if record.status == 'P' %}checked{% endif %}>
+                                                            <label class="btn btn-outline-success" for="present_{{ student.id }}">Present</label>
+                                                            
+                                                            <input type="radio" class="btn-check" name="attendance_{{ student.id }}" 
+                                                                   id="absent_{{ student.id }}" value="A"
+                                                                   {% if record.status == 'A' %}checked{% endif %}>
+                                                            <label class="btn btn-outline-danger" for="absent_{{ student.id }}">Absent</label>
+                                                        {% endif %}
+                                                    {% empty %}
+                                                        {% comment %} No existing records - show default unchecked radios {% endcomment %}
+                                                        <input type="radio" class="btn-check" name="attendance_{{ student.id }}" 
+                                                               id="present_{{ student.id }}" value="P">
+                                                        <label class="btn btn-outline-success" for="present_{{ student.id }}">Present</label>
+                                                        
+                                                        <input type="radio" class="btn-check" name="attendance_{{ student.id }}" 
+                                                               id="absent_{{ student.id }}" value="A">
+                                                        <label class="btn btn-outline-danger" for="absent_{{ student.id }}">Absent</label>
+                                                    {% endfor %}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {% for record in attendance_records %}
+                                                    {% if record.student.id == student.id %}
+                                                        {% if record.status == 'P' %}
+                                                            <span class="badge bg-success">Present</span>
+                                                        {% elif record.status == 'A' %}
+                                                            <span class="badge bg-danger">Absent</span>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                {% empty %}
+                                                    <span class="badge bg-secondary">Not Marked</span>
+                                                {% endfor %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="text-center mt-4">
+                                <button type="button" class="btn btn-success btn-lg" onclick="submitAttendance()">
+                                    <i class="fas fa-save me-2"></i>Save Attendance
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-lg ms-2" onclick="markAllPresent()">
+                                    <i class="fas fa-check-circle me-2"></i>Mark All Present
+                                </button>
+                                <button type="button" class="btn btn-outline-primary btn-lg ms-2" onclick="markAllAbsent()">
+                                    <i class="fas fa-times-circle me-2"></i>Mark All Absent
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                
+                {% elif selected_classroom %}
+                <div class="text-center py-5">
+                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No students found in this classroom</h5>
+                    <p class="text-muted">There are no approved students in {{ selected_classroom.name }}.</p>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-school fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">Select a Classroom</h5>
+                    <p class="text-muted">Please select a classroom to mark attendance.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Notification Toast -->
+<div id="notificationToast" class="toast position-fixed top-0 end-0 m-3" style="z-index: 1060;" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+        <strong class="me-auto" id="toastTitle">Notification</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body" id="toastMessage">
+        <!-- Message will be inserted here -->
+    </div>
+</div>
+
+<style>
+.btn-check:checked + .btn-outline-success {
+    background-color: #198754;
+    border-color: #198754;
+    color: white;
+}
+
+.btn-check:checked + .btn-outline-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+}
+
+.table th {
+    background: linear-gradient(45deg, #1e3c72, #2a5298);
+    color: white;
+    border: none;
+}
+
+.student-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e8f0fe;
+    color: #1a73e8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+/* Ensure radio buttons are properly styled */
+.btn-group .btn {
+    border-radius: 0.375rem;
+}
+
+.btn-group .btn:first-child {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.btn-group .btn:last-child {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+</style>
+
+<script>
+// Mark all students as present
+function markAllPresent() {
+    const radioGroups = document.querySelectorAll('[data-student-id]');
+    radioGroups.forEach(group => {
+        const presentRadio = group.querySelector('input[value="P"]');
+        if (presentRadio) {
+            presentRadio.checked = true;
+            presentRadio.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+    });
+    showNotification('All students marked as present!', 'success');
+}
+
+// Mark all students as absent
+function markAllAbsent() {
+    const radioGroups = document.querySelectorAll('[data-student-id]');
+    radioGroups.forEach(group => {
+        const absentRadio = group.querySelector('input[value="A"]');
+        if (absentRadio) {
+            absentRadio.checked = true;
+            absentRadio.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+    });
+    showNotification('All students marked as absent!', 'info');
+}
+
+// Submit attendance form
+function submitAttendance() {
+    const form = document.getElementById('attendanceForm');
+    const formData = new FormData(form);
+    
+    // Collect attendance data for each student
+    const studentRadios = document.querySelectorAll('input[name^="attendance_"]:checked');
+    
+    if (studentRadios.length === 0) {
+        showNotification('Please mark attendance for at least one student!', 'warning');
+        return;
+    }
+    
+    // Add each student's attendance to form data
+    studentRadios.forEach(radio => {
+        const studentId = radio.name.replace('attendance_', '');
+        const status = radio.value;
+        formData.append('students', studentId + ':' + status);
+    });
+    
+    console.log('Submitting attendance data...');
+    
+    // Submit via AJAX
+    fetch("{% url 'mark_attendance' %}", {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': '{{ csrf_token }}'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Response data:', data);
+        if (data.success) {
+            showNotification(data.message || 'Attendance saved successfully!', 'success');
+            // Reload page after a short delay to show updated status
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+        } else {
+            showNotification('Error: ' + (data.error || 'Unknown error occurred'), 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Error saving attendance: ' + error.message, 'error');
+    });
+}
+
+// Show notification
+function showNotification(message, type = 'success') {
+    const toast = document.getElementById('notificationToast');
+    const toastTitle = document.getElementById('toastTitle');
+    const toastMessage = document.getElementById('toastMessage');
+    
+    // Set message and style based on type
+    toastMessage.textContent = message;
+    
+    // Remove all color classes
+    toast.classList.remove('text-bg-success', 'text-bg-danger', 'text-bg-warning', 'text-bg-info');
+    
+    // Add appropriate color class
+    switch(type) {
+        case 'error':
+            toast.classList.add('text-bg-danger');
+            toastTitle.textContent = 'Error';
+            break;
+        case 'warning':
+            toast.classList.add('text-bg-warning');
+            toastTitle.textContent = 'Warning';
+            break;
+        case 'info':
+            toast.classList.add('text-bg-info');
+            toastTitle.textContent = 'Info';
+            break;
+        default:
+            toast.classList.add('text-bg-success');
+            toastTitle.textContent = 'Success';
+    }
+    
+    // Show notification using Bootstrap toast
+    const bootstrapToast = new bootstrap.Toast(toast);
+    bootstrapToast.show();
+}
+
+// Update UI when radio buttons change
+document.addEventListener('DOMContentLoaded', function() {
+    const radioButtons = document.querySelectorAll('.btn-check');
+    radioButtons.forEach(radio => {
+        radio.addEventListener('change', function() {
+            // The Bootstrap styling will handle the visual changes automatically
+            console.log('Radio changed:', this.name, this.value);
+        });
+        
+        // Ensure proper initial state
+        if (radio.checked) {
+            radio.dispatchEvent(new Event('change'));
+        }
+    });
+    
+    // Set today's date as default if not set
+    const dateInput = document.querySelector('input[name="date"]');
+    if (dateInput && !dateInput.value) {
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.value = today;
+    }
+});
+</script>
+
+{% endblock %}

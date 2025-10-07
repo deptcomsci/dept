@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Students - DeptMgnt{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">
+                    <i class="fas fa-users me-2"></i>Manage Students
+                </h2>
+                
+                <!-- Classroom Filter -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <form method="get">
+                            <div class="input-group">
+                                <select name="classroom" class="form-select" onchange="this.form.submit()">
+                                    <option value="">Select Classroom</option>
+                                    {% for classroom in classrooms %}
+                                        <option value="{{ classroom.id }}" 
+                                                {% if selected_classroom and selected_classroom.id == classroom.id %}selected{% endif %}>
+                                            {{ classroom.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                {% if selected_classroom %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Roll No</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in students %}
+                            <tr>
+                                <td>{{ student.roll_no }}</td>
+                                <td>{{ student.user.get_full_name }}</td>
+                                <td>{{ student.user.email }}</td>
+                                <td>{{ student.phone|default:"-" }}</td>
+                                <td>
+                                    {% if student.is_approved %}
+                                        <span class="badge bg-success">Approved</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if not student.is_approved %}
+                                    <form method="post" action="{% url 'approve_student' student.id %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-success btn-sm">
+                                            <i class="fas fa-check me-1"></i>Approve
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">No students found in this classroom.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">Please select a classroom to view students.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Announcements - DeptMgnt{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">
+                    <i class="fas fa-bullhorn me-2"></i>Announcements
+                </h2>
+                
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <h5>{{ student.user.get_full_name }}</h5>
+                        <p class="text-muted">Class: {{ student.classroom.name }}</p>
+                    </div>
+                </div>
+
+                {% for announcement in announcements %}
+                <div class="card mb-3 {% if announcement.important %}border-warning{% endif %}">
+                    <div class="card-header {% if announcement.important %}bg-warning text-dark{% else %}bg-light{% endif %}">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                {% if announcement.important %}
+                                    <i class="fas fa-exclamation-circle me-2"></i>
+                                {% endif %}
+                                {{ announcement.title }}
+                            </h5>
+                            <small>{{ announcement.created_at|date:"M d, Y H:i" }}</small>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">{{ announcement.content|linebreaks }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                By: {{ announcement.created_by.user.get_full_name }}
+                            </small>
+                            <span class="badge bg-success">
+                                <i class="fas fa-check me-1"></i>Read
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-5">
+                    <i class="fas fa-bullhorn fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No announcements yet</h5>
+                    <p class="text-muted">Check back later for updates from your faculty.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
